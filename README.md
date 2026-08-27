@@ -109,8 +109,7 @@ teste-tecnico-frontend/
 | :--- | :--- | :--- | :--- |
 | **Administrador** | `admin` | `admin123` | Acesso total (Especialistas, Agendas, Consultas) |
 | **Recepção / Atendente** | `recepcao` | `senha123` | Gerenciar Especialistas e Agendas |
-| **Paciente João** | `paciente_joao` | `senha123` | Visualizar, Agendar e Cancelar consultas próprias |
-| **Paciente Maria** | `paciente_maria` | `senha123` | Visualizar, Agendar e Cancelar consultas próprias |
+| **Paciente (Cliente)** | `paciente_joao` | `senha123` | Visualizar, Agendar e Cancelar consultas próprias |
 
 ---
 
