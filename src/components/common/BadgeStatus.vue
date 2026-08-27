@@ -29,3 +29,4 @@ defineProps({
     {{ status }}
   </span>
 </template>
+

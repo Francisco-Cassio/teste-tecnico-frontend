@@ -52,11 +52,15 @@ function handleLogout() {
           <div
             class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition"
           >
-            <Stethoscope class="w-6 h-6" />
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.5 5.5 0 0 1-7.54-7.54A8.98 8.98 0 0 0 12 3z" />
+              <path d="M16 6h4" />
+              <path d="M18 4v4" />
+            </svg>
           </div>
           <div>
             <span class="text-lg font-bold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">
-              ClínicaMed
+              LunaMed
             </span>
             <span class="hidden sm:block text-[11px] font-medium text-slate-500 -mt-1 tracking-wide">
               Agendamento de Consultas
@@ -280,3 +284,4 @@ function handleLogout() {
     </div>
   </header>
 </template>
+

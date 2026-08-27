@@ -64,7 +64,6 @@ function toggleDia(diaId) {
   }
 }
 
-// Cálculo da duração estimada por vaga
 const duracaoEstimada = computed(() => {
   if (!horaInicio.value || !horaEncerramento.value || !vagasPorDia.value || vagasPorDia.value <= 0) {
     return null
@@ -139,17 +138,10 @@ async function handleSubmit() {
 
 <template>
   <Teleport to="body">
-    <Transition
-      enter-active-class="transition ease-out duration-200"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-150"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
+    <Transition name="modal-fade">
       <div
         v-if="modelValue"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
         @click.self="fechar"
       >
         <div
@@ -349,3 +341,16 @@ async function handleSubmit() {
     </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+</style>
+

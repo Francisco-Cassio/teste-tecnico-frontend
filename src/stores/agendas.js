@@ -68,3 +68,4 @@ export const useAgendaStore = defineStore('agendas', {
     }
   }
 })
+
