@@ -6,12 +6,13 @@ export const useHorarioStore = defineStore('horarios', {
     horarios: [],
     minhasConsultas: [],
     filtros: {
+      busca: '',
       especialista_id: '',
       data_consulta: '',
       status: 'disponivel',
     },
     loading: false,
-    loadingActionId: null, // armazena o id do horário sendo agendado/cancelado no momento
+    loadingActionId: null,
     error: null,
   }),
 
@@ -32,8 +33,9 @@ export const useHorarioStore = defineStore('horarios', {
         this.filtros = { ...this.filtros, ...novosFiltros }
       }
 
-      // Limpa chaves vazias para não poluir os query params
-      const params = {}
+      const params = {
+        apenas_futuros: true,
+      }
       if (this.filtros.especialista_id) params.especialista_id = this.filtros.especialista_id
       if (this.filtros.data_consulta) params.data_consulta = this.filtros.data_consulta
       if (this.filtros.status) params.status = this.filtros.status
@@ -71,13 +73,11 @@ export const useHorarioStore = defineStore('horarios', {
       try {
         const resultado = await horarioService.agendar(horarioId)
         
-        // Atualiza localmente o status do horário na lista
         const index = this.horarios.findIndex(h => h.id === horarioId)
         if (index !== -1) {
           this.horarios[index] = resultado
         }
 
-        // Se o filtro atual for apenas 'disponivel', remove da visão imediata
         if (this.filtros.status === 'disponivel') {
           this.horarios = this.horarios.filter(h => h.id !== horarioId)
         }
@@ -100,10 +100,8 @@ export const useHorarioStore = defineStore('horarios', {
       try {
         const resultado = await horarioService.cancelar(horarioId)
 
-        // Remove de minhas consultas
         this.minhasConsultas = this.minhasConsultas.filter(c => c.id !== horarioId)
 
-        // Atualiza na lista geral se presente
         const index = this.horarios.findIndex(h => h.id === horarioId)
         if (index !== -1) {
           this.horarios[index] = resultado
@@ -123,6 +121,7 @@ export const useHorarioStore = defineStore('horarios', {
 
     limparFiltros() {
       this.filtros = {
+        busca: '',
         especialista_id: '',
         data_consulta: '',
         status: 'disponivel',
@@ -131,3 +130,4 @@ export const useHorarioStore = defineStore('horarios', {
     }
   }
 })
+

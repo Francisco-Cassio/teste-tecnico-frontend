@@ -2,12 +2,12 @@ import api from './api'
 
 export const horarioService = {
   async getHorarios(filtros = {}) {
-    const response = await api.get('/horarios/', { params: filtros })
+    const response = await api.get('/horarios/', { params: { page_size: 200, ...filtros } })
     return response.data.results || response.data
   },
 
   async getMinhasConsultas() {
-    const response = await api.get('/horarios/minhas_consultas/')
+    const response = await api.get('/horarios/minhas_consultas/', { params: { page_size: 200 } })
     return response.data.results || response.data
   },
 
