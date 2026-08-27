@@ -62,7 +62,7 @@ async function confirmarExclusao() {
   excluindo.value = true
   try {
     await especialistaStore.excluirEspecialista(especialistaParaExcluir.value.id)
-    toastStore.success('Especialista inativado com sucesso (Soft Delete).')
+    toastStore.success('Especialista inativado com sucesso.')
     modalExcluirAberto.value = false
     especialistaParaExcluir.value = null
   } catch (err) {
@@ -209,7 +209,7 @@ async function confirmarExclusao() {
                   </button>
                   <button
                     @click="iniciarExclusao(esp)"
-                    title="Inativar Especialista (Soft Delete)"
+                    title="Inativar Especialista"
                     class="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
                   >
                     <Trash2 class="w-4 h-4" />
@@ -233,7 +233,7 @@ async function confirmarExclusao() {
     <ModalConfirmacao
       v-model="modalExcluirAberto"
       titulo="Inativar Especialista"
-      mensagem="Tem certeza que deseja inativar este especialista? Suas agendas ativas e horários livres vinculados também serão cancelados (Soft Delete)."
+      mensagem="Tem certeza que deseja inativar este especialista? Suas agendas ativas e horários livres vinculados também serão cancelados."
       tipo="danger"
       texto-confirmar="Sim, Inativar"
       texto-cancelar="Cancelar"
@@ -250,3 +250,4 @@ async function confirmarExclusao() {
     </ModalConfirmacao>
   </div>
 </template>
+

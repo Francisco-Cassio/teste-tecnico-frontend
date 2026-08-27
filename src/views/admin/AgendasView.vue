@@ -36,6 +36,11 @@ function formatarDias(dias) {
   return dias.map(d => nomesDiasCurtos[d]).join(', ')
 }
 
+function formatarHora(hora) {
+  if (!hora) return ''
+  return hora.slice(0, 5)
+}
+
 function iniciarExclusao(agenda) {
   agendaParaExcluir.value = agenda
   modalExcluirAberto.value = true
@@ -160,7 +165,7 @@ async function confirmarExclusao() {
 
               <button
                 @click="iniciarExclusao(agenda)"
-                title="Excluir Agenda (Soft Delete)"
+                title="Inativar Agenda"
                 type="button"
                 class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
               >
@@ -181,7 +186,7 @@ async function confirmarExclusao() {
               <div class="flex items-center gap-2">
                 <Clock class="w-4 h-4 text-indigo-600 shrink-0" />
                 <span class="text-slate-600">Horário:</span>
-                <span class="font-bold text-slate-900">{{ agenda.hora_inicio }} às {{ agenda.hora_encerramento }}</span>
+                <span class="font-bold text-slate-900">{{ formatarHora(agenda.hora_inicio) }} às {{ formatarHora(agenda.hora_encerramento) }}</span>
               </div>
 
               <!-- Vagas -->
@@ -216,7 +221,7 @@ async function confirmarExclusao() {
     <ModalConfirmacao
       v-model="modalExcluirAberto"
       titulo="Inativar Agenda"
-      mensagem="Tem certeza que deseja inativar esta agenda? Todos os horários disponíveis ainda não reservados vinculados a ela serão removidos (Soft Delete)."
+      mensagem="Tem certeza que deseja inativar esta agenda? Todos os horários disponíveis ainda não reservados vinculados a ela serão cancelados."
       tipo="danger"
       texto-confirmar="Sim, Inativar Agenda"
       texto-cancelar="Cancelar"
@@ -227,9 +232,10 @@ async function confirmarExclusao() {
         <div class="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs space-y-1 text-rose-950">
           <div><strong>Médico(a):</strong> {{ agendaParaExcluir.especialista?.nome }}</div>
           <div><strong>Dias:</strong> {{ formatarDias(agendaParaExcluir.dias_semana) }}</div>
-          <div><strong>Horário:</strong> {{ agendaParaExcluir.hora_inicio }} às {{ agendaParaExcluir.hora_encerramento }}</div>
+          <div><strong>Horário:</strong> {{ formatarHora(agendaParaExcluir.hora_inicio) }} às {{ formatarHora(agendaParaExcluir.hora_encerramento) }}</div>
         </div>
       </template>
     </ModalConfirmacao>
   </div>
 </template>
+

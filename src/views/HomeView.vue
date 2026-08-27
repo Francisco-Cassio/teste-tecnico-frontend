@@ -1,14 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useHorarioStore } from '../stores/horarios'
 import { useToastStore } from '../stores/toast'
 import FiltrosHorarios from '../components/horarios/FiltrosHorarios.vue'
-import CardHorario from '../components/horarios/CardHorario.vue'
+import CardEspecialistaHorarios from '../components/horarios/CardEspecialistaHorarios.vue'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import ModalConfirmacao from '../components/common/ModalConfirmacao.vue'
-import { CalendarCheck, Stethoscope, Clock, Shield, AlertCircle } from 'lucide-vue-next'
+import { CalendarCheck, Clock, AlertCircle } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const horarioStore = useHorarioStore()
@@ -23,6 +23,73 @@ const acaoCarregando = ref(false)
 
 onMounted(() => {
   horarioStore.carregarHorarios()
+})
+
+function ehHorarioPassado(dataStr, horaInicioStr) {
+  if (!dataStr || !horaInicioStr) return false
+  const [ano, mes, dia] = dataStr.split('-').map(Number)
+  const [hora, min] = horaInicioStr.split(':').map(Number)
+  const dataHorario = new Date(ano, mes - 1, dia, hora, min, 0)
+  return dataHorario <= new Date()
+}
+
+const especialistasAgrupados = computed(() => {
+  const lista = horarioStore.horarios || []
+  const gruposMap = new Map()
+
+  for (const horario of lista) {
+    const esp = horario.agenda?.especialista
+    if (!esp) continue
+
+    if (ehHorarioPassado(horario.data, horario.hora_inicio)) {
+      continue
+    }
+
+    if (!gruposMap.has(esp.id)) {
+      gruposMap.set(esp.id, {
+        especialista: esp,
+        totalDisponiveis: 0,
+        diasMap: new Map(),
+      })
+    }
+
+    const grupo = gruposMap.get(esp.id)
+    if (horario.status === 'disponivel') {
+      grupo.totalDisponiveis++
+    }
+
+    if (!grupo.diasMap.has(horario.data)) {
+      grupo.diasMap.set(horario.data, {
+        data: horario.data,
+        horarios: [],
+      })
+    }
+
+    grupo.diasMap.get(horario.data).horarios.push(horario)
+  }
+
+  const resultado = []
+  for (const grupo of gruposMap.values()) {
+    const dias = Array.from(grupo.diasMap.values()).sort((a, b) => a.data.localeCompare(b.data))
+    for (const d of dias) {
+      d.horarios.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
+    }
+    if (dias.length > 0) {
+      const termoBusca = (horarioStore.filtros.busca || '').trim().toLowerCase()
+      const matchNome = (grupo.especialista.nome || '').toLowerCase().includes(termoBusca)
+      const matchEsp = (grupo.especialista.especialidade || '').toLowerCase().includes(termoBusca)
+
+      if (!termoBusca || matchNome || matchEsp) {
+        resultado.push({
+          especialista: grupo.especialista,
+          totalDisponiveis: grupo.totalDisponiveis,
+          dias,
+        })
+      }
+    }
+  }
+
+  return resultado.sort((a, b) => a.especialista.nome.localeCompare(b.especialista.nome))
 })
 
 function iniciarAgendamento(horario) {
@@ -69,6 +136,12 @@ async function confirmarCancelamento() {
     acaoCarregando.value = false
   }
 }
+
+function formatarDataBR(dataStr) {
+  if (!dataStr) return ''
+  const [ano, mes, dia] = dataStr.split('-')
+  return `${dia}/${mes}/${ano}`
+}
 </script>
 
 <template>
@@ -80,13 +153,13 @@ async function confirmarCancelamento() {
       <div class="relative z-10 max-w-2xl">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-4 text-cyan-100 border border-white/10">
           <CalendarCheck class="w-4 h-4" />
-          Atendimento Médico Ágil & Sem Filas
+          Agendamentos Rápidos e Seguros
         </div>
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3">
           Agende sua Consulta Médica Online
         </h1>
         <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
-          Consulte horários disponíveis em tempo real com nossos especialistas certificados e confirme sua reserva instantaneamente.
+          Consulte os horários por especialista, toque no horário de sua preferência e confirme sua reserva instantaneamente.
         </p>
       </div>
 
@@ -104,7 +177,7 @@ async function confirmarCancelamento() {
 
     <!-- Estado de Erro -->
     <div
-      v-else-if="horarioStore.error"
+      v-else-if="horarioStore.error && horarioStore.horarios.length === 0"
       class="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-center my-8 max-w-lg mx-auto"
     >
       <AlertCircle class="w-8 h-8 text-rose-600 mx-auto mb-2" />
@@ -119,27 +192,27 @@ async function confirmarCancelamento() {
       </button>
     </div>
 
-    <!-- Grade de Horários -->
+    <!-- Lista de Médicos com Horários Agrupados -->
     <div v-else>
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-5">
         <h2 class="text-lg font-bold text-slate-800">
-          Horários Encontrados ({{ horarioStore.horarios.length }})
+          Especialistas com Atendimento ({{ especialistasAgrupados.length }})
         </h2>
         <span class="text-xs font-semibold text-slate-500">
-          {{ horarioStore.totalDisponiveis }} vaga(s) disponível(is)
+          {{ horarioStore.totalDisponiveis }} vaga(s) disponível(is) no total
         </span>
       </div>
 
       <!-- Lista Vazia -->
       <div
-        v-if="horarioStore.horarios.length === 0"
-        class="bg-white rounded-2xl border border-slate-200/80 p-12 text-center my-4 max-w-md mx-auto"
+        v-if="especialistasAgrupados.length === 0"
+        class="bg-white rounded-3xl border border-slate-200/80 p-12 text-center my-4 max-w-md mx-auto shadow-xs"
       >
         <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mx-auto mb-4">
           <Clock class="w-7 h-7" />
         </div>
         <h3 class="font-bold text-slate-800 text-base mb-1">Nenhum horário encontrado</h3>
-        <p class="text-xs text-slate-500 mb-4">
+        <p class="text-xs text-slate-500 mb-4 leading-relaxed">
           Tente alterar ou limpar os filtros para visualizar outros especialistas e datas.
         </p>
         <button
@@ -151,16 +224,13 @@ async function confirmarCancelamento() {
         </button>
       </div>
 
-      <!-- Cards em Grid -->
-      <div
-        v-else
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-      >
-        <CardHorario
-          v-for="horario in horarioStore.horarios"
-          :key="horario.id"
-          :horario="horario"
-          :carregando="horarioStore.loadingActionId === horario.id"
+      <!-- Lista de Cards por Médico -->
+      <div v-else class="space-y-6">
+        <CardEspecialistaHorarios
+          v-for="grupo in especialistasAgrupados"
+          :key="grupo.especialista.id"
+          :grupo="grupo"
+          :loading-action-id="horarioStore.loadingActionId"
           @agendar="iniciarAgendamento"
           @cancelar="iniciarCancelamento"
         />
@@ -173,7 +243,7 @@ async function confirmarCancelamento() {
       titulo="Confirmar Agendamento"
       mensagem="Deseja confirmar a reserva da consulta com os seguintes dados?"
       tipo="success"
-      texto-confirmar="Sim, Agendar"
+      texto-confirmar="Sim, Agendar Consulta"
       texto-cancelar="Voltar"
       :carregando="acaoCarregando"
       @confirmar="confirmarAgendamento"
@@ -181,7 +251,7 @@ async function confirmarCancelamento() {
       <template #detalhes v-if="horarioParaAgendar">
         <div class="mt-3 p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-xl text-xs space-y-1.5 text-emerald-950">
           <div><strong>Médico(a):</strong> {{ horarioParaAgendar.agenda?.especialista?.nome }} ({{ horarioParaAgendar.agenda?.especialista?.especialidade }})</div>
-          <div><strong>Data:</strong> {{ horarioParaAgendar.data }}</div>
+          <div><strong>Data:</strong> {{ formatarDataBR(horarioParaAgendar.data) }}</div>
           <div><strong>Horário:</strong> {{ horarioParaAgendar.hora_inicio }} às {{ horarioParaAgendar.hora_encerramento }}</div>
         </div>
       </template>

@@ -44,7 +44,6 @@ async function handleRegister() {
 
     toastStore.success('Cadastro realizado com sucesso! Fazendo login...')
 
-    // Realiza login automático logo após cadastro
     await authStore.login(username.value, password.value)
     router.push('/')
   } catch (err) {
@@ -194,3 +193,4 @@ async function handleRegister() {
     </div>
   </div>
 </template>
+
