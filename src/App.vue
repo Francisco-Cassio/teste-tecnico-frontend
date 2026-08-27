@@ -1,7 +1,9 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <HelloWorld />
+  <div class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased">
+    <RouterView />
+  </div>
 </template>
