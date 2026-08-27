@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useToastStore } from '../stores/toast'
-import { LogIn, Lock, User, Stethoscope, Shield, Sparkles, AlertCircle } from 'lucide-vue-next'
+import { LogIn, Lock, User, AlertCircle } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const toastStore = useToastStore()
@@ -36,12 +36,6 @@ async function handleSubmit() {
     carregando.value = false
   }
 }
-
-function preencherCredencial(user, pass) {
-  username.value = user
-  password.value = pass
-  erroLocal.value = ''
-}
 </script>
 
 <template>
@@ -62,21 +56,22 @@ function preencherCredencial(user, pass) {
           </div>
           <h2 class="text-2xl font-bold text-slate-900">Acesse sua Conta</h2>
           <p class="text-sm text-slate-500 mt-1">
-            Entre para gerenciar ou agendar suas consultas médicas
+            Entre para agendar suas consultas médicas
           </p>
         </div>
 
         <!-- Alerta de Erro -->
         <div
-          v-if="erroLocal"
+          v-if="erroLocal || authStore.error"
           class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-800 text-sm font-medium"
         >
           <AlertCircle class="w-5 h-5 text-rose-600 shrink-0" />
-          <span>{{ erroLocal }}</span>
+          <span>{{ erroLocal || authStore.error }}</span>
         </div>
 
         <!-- Formulário -->
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form @submit.prevent="handleSubmit" class="space-y-5">
+          <!-- Campo Usuário -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               Usuário
@@ -96,6 +91,7 @@ function preencherCredencial(user, pass) {
             </div>
           </div>
 
+          <!-- Campo Senha -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               Senha
@@ -115,6 +111,7 @@ function preencherCredencial(user, pass) {
             </div>
           </div>
 
+          <!-- Botão Entrar -->
           <button
             type="submit"
             :disabled="carregando"
@@ -139,51 +136,7 @@ function preencherCredencial(user, pass) {
             Cadastre-se grátis
           </RouterLink>
         </div>
-
-        <!-- Divisor para Credenciais Rápidas -->
-        <div class="relative my-8">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-slate-200"></div>
-          </div>
-          <div class="relative flex justify-center text-xs uppercase">
-            <span class="bg-white px-3 text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
-              <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-              Contas de Teste Rápidas
-            </span>
-          </div>
-        </div>
-
-        <!-- Botões de Preenchimento Rápido -->
-        <div class="grid grid-cols-3 gap-2">
-          <button
-            @click="preencherCredencial('paciente_joao', 'senha123')"
-            type="button"
-            class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-blue-50 hover:border-blue-200 text-left transition group cursor-pointer"
-          >
-            <div class="text-[11px] font-bold text-slate-700 group-hover:text-blue-700">Paciente</div>
-            <div class="text-[10px] text-slate-500">paciente_joao</div>
-          </button>
-
-          <button
-            @click="preencherCredencial('recepcao', 'senha123')"
-            type="button"
-            class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-indigo-50 hover:border-indigo-200 text-left transition group cursor-pointer"
-          >
-            <div class="text-[11px] font-bold text-slate-700 group-hover:text-indigo-700">Recepção</div>
-            <div class="text-[10px] text-slate-500">recepcao</div>
-          </button>
-
-          <button
-            @click="preencherCredencial('admin', 'admin123')"
-            type="button"
-            class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-purple-50 hover:border-purple-200 text-left transition group cursor-pointer"
-          >
-            <div class="text-[11px] font-bold text-slate-700 group-hover:text-purple-700">Admin</div>
-            <div class="text-[10px] text-slate-500">admin</div>
-          </button>
-        </div>
       </div>
     </div>
   </div>
 </template>
-
