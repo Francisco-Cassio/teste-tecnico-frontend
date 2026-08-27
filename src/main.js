@@ -11,7 +11,6 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// Restaura / valida sessão do usuário se houver token no localStorage
 const authStore = useAuthStore()
 if (authStore.accessToken) {
   authStore.fetchCurrentUser().catch(() => {})

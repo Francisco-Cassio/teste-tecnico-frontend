@@ -14,7 +14,7 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: {
-      title: 'Agendamento de Consultas — Clínica Médica',
+      title: 'Agendamento de Consultas — LunaMed',
     },
   },
   {
@@ -22,7 +22,7 @@ const routes = [
     name: 'login',
     component: LoginView,
     meta: {
-      title: 'Acessar Conta — Clínica Médica',
+      title: 'Acessar Conta — LunaMed',
       guestOnly: true,
     },
   },
@@ -31,7 +31,7 @@ const routes = [
     name: 'registro',
     component: RegistroView,
     meta: {
-      title: 'Criar Conta de Paciente — Clínica Médica',
+      title: 'Criar Conta de Paciente — LunaMed',
       guestOnly: true,
     },
   },
@@ -40,7 +40,7 @@ const routes = [
     name: 'minhas-consultas',
     component: MinhasConsultasView,
     meta: {
-      title: 'Minhas Consultas — Clínica Médica',
+      title: 'Minhas Consultas — LunaMed',
       requiresAuth: true,
     },
   },
@@ -49,7 +49,7 @@ const routes = [
     name: 'admin-especialistas',
     component: EspecialistasView,
     meta: {
-      title: 'Gestão de Especialistas — Painel Interno',
+      title: 'Gestão de Especialistas — LunaMed',
       requiresAuth: true,
       requiresInterno: true,
     },
@@ -59,7 +59,7 @@ const routes = [
     name: 'admin-agendas',
     component: AgendasView,
     meta: {
-      title: 'Gestão de Agendas — Painel Interno',
+      title: 'Gestão de Agendas — LunaMed',
       requiresAuth: true,
       requiresInterno: true,
     },
@@ -81,12 +81,10 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  // Atualiza o título da página
   if (to.meta.title) {
     document.title = to.meta.title
   }
 
-  // 1. Rota requer autenticação e o usuário não está logado
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({
       name: 'login',
@@ -94,12 +92,10 @@ router.beforeEach((to, from, next) => {
     })
   }
 
-  // 2. Rota requer perfil interno (atendente / admin)
   if (to.meta.requiresInterno && !authStore.isInterno) {
     return next({ name: 'home' })
   }
 
-  // 3. Rota exclusiva para convidados (login/registro) e o usuário já está logado
   if (to.meta.guestOnly && authStore.isAuthenticated) {
     return next({ name: 'home' })
   }
@@ -108,3 +104,4 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+

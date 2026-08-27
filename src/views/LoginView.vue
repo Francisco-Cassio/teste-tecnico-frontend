@@ -54,7 +54,11 @@ function preencherCredencial(user, pass) {
           <div
             class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-blue-500/30 mb-4"
           >
-            <Stethoscope class="w-8 h-8" />
+            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.5 5.5 0 0 1-7.54-7.54A8.98 8.98 0 0 0 12 3z" />
+              <path d="M16 6h4" />
+              <path d="M18 4v4" />
+            </svg>
           </div>
           <h2 class="text-2xl font-bold text-slate-900">Acesse sua Conta</h2>
           <p class="text-sm text-slate-500 mt-1">
@@ -182,3 +186,4 @@ function preencherCredencial(user, pass) {
     </div>
   </div>
 </template>
+
