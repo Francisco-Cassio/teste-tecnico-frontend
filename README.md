@@ -1,6 +1,11 @@
-# 🏥 Sistema de Gerenciamento e Agendamento de Consultas — Frontend
+# 🏥 Sistema de Gerenciamento e Agendamento de Consultas Médicas — Frontend
 
 Interface web moderna, responsiva e reativa para agendamento de consultas médicas, gestão de especialistas e controle de agendas clínicas em tempo real, desenvolvida com **Vue 3**, **Vite**, **Tailwind CSS**, **Pinia** e **Vue Router**.
+
+> [IMPORTANT !!!]
+>
+> **Repositório do Backend:** Esta interface web consome a API REST desenvolvida em Django. Para que o agendamento de consultas, cadastro de médicos e login funcionem, certifique-se de executar o backend disponível em:
+> 👉 **[Repositório Backend (Django REST Framework)](https://github.com/Francisco-Cassio/teste-tecnico-backend)**
 
 ---
 
